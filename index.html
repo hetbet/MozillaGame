@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en-Gb">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>BreakOut | Prison Simulator</title>
+    <style>
+        html, body {
+            background-color: whitesmoke;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        canvas {
+            background: url(https://www.tapeten1.de/17399-home_default/tpn-342995.jpg);
+            display: block;
+            margin: 0 auto;
+            outline: 3px solid black;
+        }
+
+        h1 {
+            background: linear-gradient( black,  #0095DD);
+            -webkit-text-fill-color: transparent; 
+            -webkit-background-clip: text; 
+        }
+
+        #NavBar {
+            background: linear-gradient(grey, whitesmoke);
+            padding: 4vh;
+            margin-bottom: 4vh;
+            text-align: center;
+        }
+
+        #NavBar > p {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        #footer {
+            position: fixed;
+            background: linear-gradient(whitesmoke, grey);
+            bottom: 0;
+            display: block;
+            text-align: center;
+            width: 100%;
+        }
+
+        #footer > p {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            margin-bottom: 2vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="NavBar">
+        <h1>Breakout | Prison Simulator!</h1>
+        <p>Breakout is a game made by Matthew Roberts using: <a href="https://developer.mozilla.org/en-US/docs/Games/Tutorials">https://developer.mozilla.org/en-US/docs/Games/Tutorials</a></p>
+    </div>
+
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+
+    <div id="footer">
+        <p>All Javascript created by mozilla.<br>Anything else by Matthew Roberts.</p>
+    </div>
+   
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        /*
+        BOOTSTRAP
+        */
+        
+
+        /*
+        CANVAS BASICS 
+        */
+        // Canvas
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        // X & Y
+        let x = canvas.width / 2;
+        let y = canvas.height - 30;
+        // Dx & Dy
+        let dx = 2;
+        let dy = -2;
+
+
+        /*
+        LIVES
+        */
+        // Lives
+        let lives = 3;
+        // Lives
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
+        }
+
+
+        /* 
+        Bricks IN GENERAL
+        */
+        // Bricks
+        const brickRowCount = 3;
+        const brickColumnCount = 5;
+        const brickWidth = 75;
+        const brickHeight = 20;
+        const brickPadding = 10;
+        const brickOffsetTop = 30;
+        const brickOffsetLeft = 30;
+        // Bricks
+        const bricks = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                bricks[c][r] = { x:0, y:0, status: 1};
+            }
+        }
+        // drawBricks
+        function drawBricks() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status === 1) {
+                        const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                        const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX,brickY,brickWidth,brickHeight);
+                        ctx.fillStyle = "#0095DD";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    
+                }
+            }
+        }
+        // Collision for Bricks
+        function collisionDetection() {
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    const b = bricks[c][r];
+                    if (b.status === 1) {
+                        if (
+                            x > b.x &&
+                            x < b.x + brickWidth &&
+                            y > b.y &&
+                            y < b.y + brickHeight
+                        ) {
+                            dy = -dy;
+                            b.status = 0;
+                            score++;
+                            if (score === brickRowCount * brickColumnCount) {
+                                alert("YOU WIN, CONGRATULATIONS!")
+                                document.location.reload();
+                            }
+                        }   
+                    }
+                }
+            }
+        }
+        
+
+        /*
+        BALL
+        */
+        // Ball Radius
+        const ballRadius = 10;
+        // Draws ball
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x,y,ballRadius,0,Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+
+        /*
+        SCORE
+        */
+       // Score
+       let score = 0;
+        // Draw score
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText(`Score: ${score}`, 8, 20);
+        }
+
+
+        /*
+        PADDLE
+        */
+        // Paddle
+        const paddleHeight = 10;
+        const paddleWidth = 75;
+        let paddleX = (canvas.width - paddleWidth) / 2;
+        // Draw paddle
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle    = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+
+        /*
+        DRAW
+        */
+        // Clears, and adds movement
+        function draw() {
+            // Clear all at start
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            /*
+            CALL FUNCTIONS
+            */
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            drawScore();
+            drawLives();
+            collisionDetection();
+
+
+            /*
+            ITERATION
+            */
+            // Iteration
+            x += dx;
+            y += dy;
+
+
+            /* 
+            BOUNCE
+            */
+            // Side Bounce
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            // Roof & Floor Bounce
+            if (y + dy < ballRadius) {
+                dy = -dy;
+            } else if (y + dy > canvas.height - ballRadius) { 
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                } else {
+                    lives--;
+                    if (!lives) {
+                        alert("GAME OVER");
+                        document.location.reload();
+                    } else {
+                        x = canvas.width / 2;
+                        y = canvas.height - 30;
+                        dx = 2;
+                        dy = -2;
+                        paddleX = (canvas.width - paddleWidth) / 2;
+                    } 
+                }
+            }
+            
+
+            /*
+            DECIDE
+            */
+            // Decision
+            if (rightPressed) {
+                paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
+            } else if (leftPressed) {
+                paddleX = Math.max(paddleX - 7, 0);
+            }
+
+
+            /*
+            ANIMATING
+            */
+            // Animate every frame
+            requestAnimationFrame(draw);
+        }
+
+        
+        /*
+        MOVEMENT BY KEYS
+        */
+        // If key down, activate movement
+        function keyDownHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") {
+                rightPressed = true;
+            }
+            else if (e.key === "Left" || e.key === "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+        // If key up, stop movement by false
+        function keyUpHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") {
+                rightPressed = false;
+            }
+            else if (e.key === "Left" || e.key === "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+
+        /*
+        EVENT LISTENER KEY UP AND KEY DOWN
+        */
+        // Mouse listener
+        document.addEventListener("mousemove", mouseMoveHandler, false)
+        // Mouse Function
+        function mouseMoveHandler(e) {
+            const relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
+        // Pressed
+        let rightPressed = false;
+        let leftPressed = false;
+        // Listen for key pressed up and down - LEFT AND RIGHT arrows
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+
+
+        /*
+        DRAW MAIN FUNCTION
+        */
+        // Draw function
+        draw();
+    </script>
+
+</body>
+
+
+</html>
