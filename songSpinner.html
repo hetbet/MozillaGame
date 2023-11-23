@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Song Spinner</title>
+<meta name="viewport" content="device-width, intial-scale=1"/>
+
+
+<style>
+
+/* Head + Body */
+head, body {
+    margin: 0;
+    text-align: center;
+    font-family: 'Lucida Sans';
+    overflow: hidden;
+}
+
+/* Content */
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Record Player Box */
+#recordPlayerBox {
+    margin: 5vh 0vw 5vh 0vw;
+}
+
+/* Record Player */
+#recordPlayer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 30vw;
+    height: auto;
+}
+
+
+/* Song Options */
+#songOptions {
+    display: grid;
+    
+    grid-template-columns: 30vw 30vw 30vw;
+
+    column-gap: 3vw;
+}
+
+#songOptions > button {
+    font-size: 1.7vw;
+}
+
+
+/* Headings */
+h1 {
+    font-size: 2vw;
+}
+
+h2 {
+    font-size: 1.8vw;
+}
+
+h3 {
+    font-size: 1.9vw;
+    color: blue;
+}
+
+/* @media aka kill me */
+
+
+@media screen and (max-device-width: 800px) {
+    #recordPlayer {
+        width: 50vw;
+    }
+}
+
+@media screen and (max-device-width: 600px) {
+    #recordPlayer {
+        width: 70vw;
+    }
+
+    h1, h2, h3, h4 {
+        font-size: 2.5vw;
+    }
+}
+
+@media screen and (max-device-width: 400px) {
+    #recordPlayer {
+        width: 90vw;
+    }
+
+    h1, h2, h3, h4 {
+        font-size: 3.5vw;
+    }
+}
+
+</style>
+</head>
+<body>
+<!-- Audio Choices -->
+<audio id="track1" src="assets/secret.mp3"></audio>
+<audio id="track2" src="assets/BTW.mp3"></audio>
+<audio id="track3" src="assets/EKT.mp3"></audio>
+
+<!-- Content of the page! -->
+<div id="content">
+    <!-- Introduction -->
+    <h1>Record Player</h1>
+    <h2>Prefer the traditional ways of listening to music?<br>Well that issue is solved!<br><br>Select a song and play the record!</h2>
+
+    <!-- Back Home -->
+    <a href="index.html"><h3>Back Home</h3></a>
+
+    <!-- Actual Record Player -->
+    <div id="recordPlayerBox">
+        <img id="recordPlayer" src="assets/asset.png" onclick="spin()">
+    </div>
+
+    <!-- Song Choices -->
+    <div id="songOptions">
+        <button onclick="song1()"><h4>Song 1<br>Secret</h4></button>
+        <button onclick="song2()"><h4>Song 2<br>Blind the Wind</h4></button>
+        <button onclick="song3()"><h4>Song 3<br>Everyone Knows That</h4></button>
+    </div>
+</div>
+
+<!-- Script -->
+<script>
+let recordPlayer = null;
+let rotation = 0;
+
+let track = "";
+
+function song1() {
+    track = document.querySelector("#track1");
+}
+
+function song2() {
+    track = document.querySelector("#track2");
+}
+
+function song3() {
+    track = document.querySelector("#track3");
+}
+
+function spin() {
+    if (!recordPlayer) {
+        track.play();
+        recordPlayer = setInterval(() => {
+            document.querySelector("#recordPlayer").style.transform = "rotate("+rotation+"deg)";
+            rotation = (rotation + 1) % 360;
+        }, 10);
+    } else {
+        recordPlayer = clearInterval(recordPlayer);
+        track.pause();
+    }
+}
+</script>
+</body>
+</html>
